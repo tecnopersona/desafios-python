@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const runBtn = document.getElementById('run-btn');
     const nextBtn = document.getElementById('next-btn');
     const prevBtn = document.getElementById('prev-btn');
+    const showSolutionBtn = document.getElementById('show-solution-btn');
 
     let pyodide;
     let currentExerciseIndex = 0;
@@ -54,8 +55,36 @@ document.addEventListener('DOMContentLoaded', async () => {
         for (const testCase of exercise.testCases) {
             const fullCode = `${userCode}\n\n${testCase.checkCode}`;
             try {
-                const result = await pyodide.runPythonAsync(fullCode);
-                const { success, userOutput, expectedOutput } = JSON.parse(result);
+                // Redirect python stdout to capture print() statements
+                await pyodide.runPythonAsync(`
+import sys
+import io
+sys.stdout = io.StringIO()
+                `);
+                
+                await pyodide.runPythonAsync(fullCode);
+                
+                const result = await pyodide.runPythonAsync('sys.stdout.getvalue()');
+
+                if (!result) {
+                    allTestsPassed = false;
+                    finalMessage = `
+<span class="incorrect">¡Error en el código!</span>
+<p>Tu código no ha producido ninguna salida verificable.</p>`;
+                    await pyodide.runPythonAsync("sys.stdout = sys.__stdout__");
+                    break;
+                }
+                
+                const { success, userOutput, expectedOutput, error } = JSON.parse(result);
+
+                if (error) {
+                     allTestsPassed = false;
+                    finalMessage = `
+<span class="incorrect">¡Error en el código!</span>
+<p>Tu código ha producido un error:</p>
+<pre>${error}</pre>`;
+                    break;
+                }
 
                 if (!success) {
                     allTestsPassed = false;
@@ -63,9 +92,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 <span class="incorrect">¡Incorrecto!</span>
 Prueba fallida para la entrada: ${JSON.stringify(testCase.input)}
 <b>Tu resultado:</b>
-${userOutput}
+<pre>${userOutput}</pre>
 <b>Resultado esperado:</b>
-${expectedOutput}`;
+<pre>${expectedOutput}</pre>`;
                     break;
                 }
             } catch (error) {
@@ -75,6 +104,9 @@ ${expectedOutput}`;
 <p>Tu código ha producido un error:</p>
 <pre>${error.message}</pre>`;
                 break;
+            } finally {
+                 // Restore stdout
+                await pyodide.runPythonAsync("sys.stdout = sys.__stdout__");
             }
         }
 
@@ -83,6 +115,11 @@ ${expectedOutput}`;
         }
         
         outputEl.innerHTML = finalMessage;
+    }
+
+    function showSolution() {
+        const exercise = exercises[currentExerciseIndex];
+        editor.setValue(exercise.solution);
     }
 
     nextBtn.addEventListener('click', () => {
@@ -100,9 +137,9 @@ ${expectedOutput}`;
     });
 
     runBtn.addEventListener('click', runCode);
+    showSolutionBtn.addEventListener('click', showSolution);
 
     await initPyodide();
     initCodeMirror();
     renderExercise(currentExerciseIndex);
 });
-

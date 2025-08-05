@@ -103,6 +103,15 @@ pre {
     font-family: var(--font-code) !important;
 }
 
+.editor-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.editor-buttons > button {
+    flex: 1 1 auto;
+}
+
 button {
     background-color: var(--primary-color);
     color: white;
@@ -129,8 +138,17 @@ button:disabled {
     cursor: not-allowed;
 }
 
-#run-btn {
+#run-btn, .secondary-btn {
     width: 100%;
+    margin-top: 0;
+}
+
+.secondary-btn {
+    background-color: #6c757d;
+}
+
+.secondary-btn:hover {
+    background-color: #5a6268;
 }
 
 #output-container {
@@ -143,6 +161,11 @@ button:disabled {
 #output {
     min-height: 50px;
     font-size: 1.1em;
+}
+
+#output pre {
+    margin-top: 10px;
+    margin-bottom: 5px;
 }
 
 .correct {
@@ -160,4 +183,3 @@ button:disabled {
         grid-template-columns: 1fr;
     }
 }
-
