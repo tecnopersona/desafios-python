@@ -1,0 +1,50 @@
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Práctica de Python</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/theme/material-darker.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.5/mode/python/python.min.js"></script>
+</head>
+<body>
+    <div id="app-container">
+        <header>
+            <h1>🐍 Desafíos de Python</h1>
+            <div id="loader">Cargando Pyodide y el entorno... 🐢</div>
+        </header>
+
+        <main id="main-content" class="hidden">
+            <div class="exercise-nav">
+                <button id="prev-btn" disabled>&lt; Anterior</button>
+                <h2 id="exercise-title"></h2>
+                <button id="next-btn">Siguiente &gt;</button>
+            </div>
+
+            <div class="exercise-container">
+                <div class="problem-description">
+                    <h3>Descripción del Problema</h3>
+                    <p id="exercise-description"></p>
+                    <h3>Ejemplo de uso</h3>
+                    <pre><code id="exercise-example"></code></pre>
+                </div>
+                <div class="code-editor-container">
+                    <h3>Tu Solución</h3>
+                    <textarea id="code-editor"></textarea>
+                    <button id="run-btn">Ejecutar Código</button>
+                </div>
+            </div>
+
+            <div id="output-container">
+                <h3>Resultado</h3>
+                <pre id="output"></pre>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
